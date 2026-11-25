@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08111f"><link rel="manifest" href="manifest.json">
+<title>AI Trading Master Mobile</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#08111f;color:#e5edf7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:16px;background:#101d30;position:sticky;top:0;z-index:2;border-bottom:1px solid #26354a}
+h1{font-size:20px;margin:0}small{color:#8ea3bc}.wrap{padding:14px;max-width:900px;margin:auto}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:#111e30;border:1px solid #273850;border-radius:14px;padding:14px}
+.big{font-size:22px;font-weight:700}.green{color:#55d69a}.yellow{color:#f6c76b}.red{color:#ff7185}
+button,select,input{background:#182940;color:#e5edf7;border:1px solid #344c68;padding:10px;border-radius:9px;font-size:14px}
+button{cursor:pointer}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar>*{flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 6px;border-bottom:1px solid #263850;text-align:left}th{color:#9cb3cc}
+section{margin:16px 0}.list{overflow:auto}.muted{color:#8ea3bc}.pill{border-radius:99px;padding:4px 8px;font-size:12px;background:#20334a}
+label{display:block;font-size:13px;color:#9cb3cc;margin:6px 0}input{width:100%}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style></head>
+<body><header><h1>🧠 AI TRADING MASTER</h1><small>Mobile Scanner • Technical scoring • Paper trading</small></header>
+<div class="wrap">
+<div class="grid">
+<div class="card"><small>Watchlist</small><div class="big" id="count">11</div><small>Pasangan IDR</small></div>
+<div class="card"><small>Scan terakhir</small><div class="big" id="last">—</div><small>Data market</small></div>
+<div class="card"><small>Kandidat</small><div class="big green" id="candidates">—</div><small>Score ≥ 70</small></div>
+<div class="card"><small>Mode</small><div class="big yellow">SIMULASI</div><small>Tanpa order nyata</small></div>
+</div>
+<div class="toolbar"><select id="tf"><option>1h</option><option>15m</option><option>4h</option></select><button onclick="scan()">🔄 Scan sekarang</button><button onclick="exportCSV()">⬇ CSV</button></div>
+<section class="card"><h3>Scanner</h3><div class="list"><table><thead><tr><th>Coin</th><th>Harga</th><th>Score</th><th>Sinyal</th><th>RSI</th></tr></thead><tbody id="tbody"><tr><td colspan="5">Tekan Scan sekarang.</td></tr></tbody></table></div><small class="muted">Scoring aturan teknikal sederhana, bukan prediksi ML. Data tersedia bergantung endpoint publik.</small></section>
+<section class="card"><h3>Kalkulator Risiko</h3><div class="grid">
+<div><label>Modal (Rp)</label><input id="capital" type="number" value="1000000"></div>
+<div><label>Entry (Rp)</label><input id="entry" type="number" value="1000"></div>
+<div><label>Stop Loss (%)</label><input id="sl" type="number" value="3"></div>
+<div><label>Take Profit (%)</label><input id="tp" type="number" value="5"></div>
+</div><button style="margin-top:10px;width:100%" onclick="risk()">Hitung</button><div id="riskout" style="margin-top:10px"></div></section>
+<section class="card"><h3>Paper Trading Journal</h3><div class="grid">
+<div><label>Coin</label><input id="pc" value="BTC/IDR"></div><div><label>Entry (Rp)</label><input id="pe" type="number"></div><div><label>Exit (Rp)</label><input id="px" type="number"></div><div><label>Jumlah coin</label><input id="pq" type="number" step="any"></div></div><button style="margin-top:10px;width:100%" onclick="journalAdd()">Tambah transaksi simulasi</button><div class="list"><table><thead><tr><th>Coin</th><th>Entry</th><th>Exit</th><th>Qty</th><th>P/L</th></tr></thead><tbody id="journal"></tbody></table></div></section>
+<section class="card"><h3>Instal di Android</h3><ol><li>Host folder ini pada web hosting HTTPS.</li><li>Buka URL di Chrome Android.</li><li>Menu ⋮ → Tambahkan ke layar utama / Install.</li></ol><small>Scanner browser tidak otomatis berjalan 24 jam di latar belakang. Untuk monitoring 24 jam gunakan server terpisah + Telegram.</small></section>
+</div>
+<script>
+const coins=["BTC/IDR","ETH/IDR","SOL/IDR","DOGE/IDR","PEPE/IDR","FARTCOIN/IDR","VET/IDR","POL/IDR","ADA/IDR","XRP/IDR","TAO/IDR"];
+let rows=[],journal=[];
+async function scan(){
+ document.getElementById('last').textContent='...';
+ let out=[];
+ for(const s of coins){
+  try{
+   const pair=s.toLowerCase().replace('/','_');
+   const u=`https://indodax.com/api/${pair}/ticker`;
+   const resp=await fetch(u); if(!resp.ok)throw 0; const j=await resp.json();
+   let ticker=j.ticker||j; let price=Number(ticker.last), high=Number(ticker.high), low=Number(ticker.low), vol=Number(ticker.vol_idr||ticker.vol);
+   // Ticker-only heuristic: range position and volume are weak proxies; no candle indicators.
+   let score=35, rsi=null;
+   if(high>low && price>(low+(high-low)*.65))score+=18;
+   if(high>low && price>(low+(high-low)*.85))score+=12;
+   if(vol>0)score+=10;
+   score=Math.min(score,75);
+   let signal=score>=70?'WATCH':score>=55?'SETUP':'WAIT';
+   out.push({coin:s,price,score,signal,rsi});
+  }catch(e){out.push({coin:s,price:null,score:null,signal:'DATA ERROR',rsi:null})}
+ }
+ rows=out;render();document.getElementById('last').textContent=new Date().toLocaleTimeString('id-ID');
+}
+function render(){
+ document.getElementById('candidates').textContent=rows.filter(x=>x.score>=70).length;
+ document.getElementById('tbody').innerHTML=rows.map(x=>`<tr><td>${x.coin}</td><td>${x.price==null?'—':x.price.toLocaleString('id-ID')}</td><td>${x.score==null?'—':x.score}</td><td><span class="pill">${x.signal}</span></td><td>—</td></tr>`).join('');
+}
+function risk(){
+ let c=+capital.value,e=+entry.value,s=+sl.value,t=+tp.value;
+ if(!(c>0&&e>0&&s>0&&t>0)){riskout.textContent='Isi angka yang valid.';return}
+ let stop=e*(1-s/100),take=e*(1+t/100),qty=c/e,loss=c*s/100,profit=c*t/100;
+ riskout.innerHTML=`<p>Stop Loss: <b>${stop.toLocaleString('id-ID')}</b></p><p>Take Profit: <b>${take.toLocaleString('id-ID')}</b></p><p>Perkiraan rugi jika SL: <b class="red">Rp ${loss.toLocaleString('id-ID')}</b></p><p>Perkiraan profit jika TP: <b class="green">Rp ${profit.toLocaleString('id-ID')}</b></p><p>Jumlah coin jika seluruh modal digunakan: ${qty.toFixed(6)}</p>`;
+}
+function journalAdd(){
+ let c=pc.value,e=+pe.value,x=+px.value,q=+pq.value;if(!c||!(e>0&&x>0&&q>0))return alert('Lengkapi data.');
+ journal.push({c,e,x,q,p:(x-e)*q});document.getElementById('journal').innerHTML=journal.map(a=>`<tr><td>${a.c}</td><td>${a.e.toLocaleString('id-ID')}</td><td>${a.x.toLocaleString('id-ID')}</td><td>${a.q}</td><td class="${a.p>=0?'green':'red'}">${a.p.toLocaleString('id-ID')}</td></tr>`).join('');
+}
+function exportCSV(){let csv='Coin,Harga,Score,Sinyal\\n'+rows.map(x=>`${x.coin},${x.price||''},${x.score||''},${x.signal}`).join('\\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='scanner.csv';a.click();}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+</script></body></html>
