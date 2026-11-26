@@ -1,80 +1,391 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#08111f"><link rel="manifest" href="manifest.json">
-<title>AI Trading Master Mobile</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d18">
+<title>PRO TRADING AI MOBILE</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#08111f;color:#e5edf7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-header{padding:16px;background:#101d30;position:sticky;top:0;z-index:2;border-bottom:1px solid #26354a}
-h1{font-size:20px;margin:0}small{color:#8ea3bc}.wrap{padding:14px;max-width:900px;margin:auto}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:#111e30;border:1px solid #273850;border-radius:14px;padding:14px}
-.big{font-size:22px;font-weight:700}.green{color:#55d69a}.yellow{color:#f6c76b}.red{color:#ff7185}
-button,select,input{background:#182940;color:#e5edf7;border:1px solid #344c68;padding:10px;border-radius:9px;font-size:14px}
-button{cursor:pointer}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar>*{flex:1}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 6px;border-bottom:1px solid #263850;text-align:left}th{color:#9cb3cc}
-section{margin:16px 0}.list{overflow:auto}.muted{color:#8ea3bc}.pill{border-radius:99px;padding:4px 8px;font-size:12px;background:#20334a}
-label{display:block;font-size:13px;color:#9cb3cc;margin:6px 0}input{width:100%}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
-</style></head>
-<body><header><h1>🧠 AI TRADING MASTER</h1><small>Mobile Scanner • Technical scoring • Paper trading</small></header>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#e8edf7;font-family:Arial,sans-serif}
+header{padding:18px;background:#101a2c;border-bottom:1px solid #26354a}
+h1{font-size:21px;margin:0}
+small{color:#9eabc1}
+.wrap{padding:14px;max-width:950px;margin:auto}
+.card{background:#111b2d;border:1px solid #26364e;border-radius:15px;padding:15px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.label{font-size:12px;color:#98a8c0}
+.value{font-size:22px;font-weight:bold;margin-top:7px}
+.green{color:#36d692}
+.red{color:#ff657a}
+.yellow{color:#ffcb68}
+button{background:#1a2b45;color:white;border:1px solid #344b6c;padding:12px;border-radius:10px;font-weight:bold}
+button:active{opacity:.7}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.toolbar button{flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px 6px;border-bottom:1px solid #26354a}
+th{color:#9eabc1}
+.signal{font-weight:bold}
+.badge{padding:5px 8px;border-radius:8px;background:#1b3048}
+.progress{height:7px;background:#26354a;border-radius:10px;overflow:hidden;margin-top:8px}
+.bar{height:100%;background:#36d692}
+input,select{width:100%;padding:11px;border-radius:9px;background:#17243a;color:white;border:1px solid #354a66}
+footer{text-align:center;color:#8b9bb3;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🚀 PRO TRADING AI</h1>
+<small>Mobile Market Scanner • Crypto Intelligence</small>
+</header>
+
 <div class="wrap">
+
+<div class="card">
+<div class="label">STATUS MARKET</div>
+<div id="status" class="value yellow">MENGHUBUNGKAN...</div>
+<small id="updated">Menunggu data market</small>
+</div>
+
 <div class="grid">
-<div class="card"><small>Watchlist</small><div class="big" id="count">11</div><small>Pasangan IDR</small></div>
-<div class="card"><small>Scan terakhir</small><div class="big" id="last">—</div><small>Data market</small></div>
-<div class="card"><small>Kandidat</small><div class="big green" id="candidates">—</div><small>Score ≥ 70</small></div>
-<div class="card"><small>Mode</small><div class="big yellow">SIMULASI</div><small>Tanpa order nyata</small></div>
+<div class="card">
+<div class="label">BTC / USDT</div>
+<div class="value" id="btc">$--</div>
+<div id="btcchange">--</div>
 </div>
-<div class="toolbar"><select id="tf"><option>1h</option><option>15m</option><option>4h</option></select><button onclick="scan()">🔄 Scan sekarang</button><button onclick="exportCSV()">⬇ CSV</button></div>
-<section class="card"><h3>Scanner</h3><div class="list"><table><thead><tr><th>Coin</th><th>Harga</th><th>Score</th><th>Sinyal</th><th>RSI</th></tr></thead><tbody id="tbody"><tr><td colspan="5">Tekan Scan sekarang.</td></tr></tbody></table></div><small class="muted">Scoring aturan teknikal sederhana, bukan prediksi ML. Data tersedia bergantung endpoint publik.</small></section>
-<section class="card"><h3>Kalkulator Risiko</h3><div class="grid">
-<div><label>Modal (Rp)</label><input id="capital" type="number" value="1000000"></div>
-<div><label>Entry (Rp)</label><input id="entry" type="number" value="1000"></div>
-<div><label>Stop Loss (%)</label><input id="sl" type="number" value="3"></div>
-<div><label>Take Profit (%)</label><input id="tp" type="number" value="5"></div>
-</div><button style="margin-top:10px;width:100%" onclick="risk()">Hitung</button><div id="riskout" style="margin-top:10px"></div></section>
-<section class="card"><h3>Paper Trading Journal</h3><div class="grid">
-<div><label>Coin</label><input id="pc" value="BTC/IDR"></div><div><label>Entry (Rp)</label><input id="pe" type="number"></div><div><label>Exit (Rp)</label><input id="px" type="number"></div><div><label>Jumlah coin</label><input id="pq" type="number" step="any"></div></div><button style="margin-top:10px;width:100%" onclick="journalAdd()">Tambah transaksi simulasi</button><div class="list"><table><thead><tr><th>Coin</th><th>Entry</th><th>Exit</th><th>Qty</th><th>P/L</th></tr></thead><tbody id="journal"></tbody></table></div></section>
-<section class="card"><h3>Instal di Android</h3><ol><li>Host folder ini pada web hosting HTTPS.</li><li>Buka URL di Chrome Android.</li><li>Menu ⋮ → Tambahkan ke layar utama / Install.</li></ol><small>Scanner browser tidak otomatis berjalan 24 jam di latar belakang. Untuk monitoring 24 jam gunakan server terpisah + Telegram.</small></section>
+
+<div class="card">
+<div class="label">ETH / USDT</div>
+<div class="value" id="eth">$--</div>
+<div id="ethchange">--</div>
 </div>
+
+<div class="card">
+<div class="label">TOTAL SCAN</div>
+<div class="value" id="total">--</div>
+<small>Asset dipantau</small>
+</div>
+
+<div class="card">
+<div class="label">BUY SIGNAL</div>
+<div class="value green" id="buys">--</div>
+<small>Peluang bullish</small>
+</div>
+</div>
+
+<div class="card">
+<h3>🔎 AI MARKET SCANNER</h3>
+<div class="toolbar">
+<button onclick="scan()">🔄 SCAN MARKET</button>
+</div>
+<small id="scanstatus">Scanner belum dijalankan</small>
+<div style="overflow:auto;margin-top:12px">
+<table>
+<thead>
+<tr>
+<th>Coin</th>
+<th>Harga</th>
+<th>24h</th>
+<th>RSI</th>
+<th>Score</th>
+<th>Sinyal</th>
+</tr>
+</thead>
+<tbody id="results">
+<tr><td colspan="6">Tekan SCAN MARKET</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>🧠 ANALISIS COIN</h3>
+<label class="label">Pilih aset</label>
+<select id="coin">
+<option>BTCUSDT</option>
+<option>ETHUSDT</option>
+<option>BNBUSDT</option>
+<option>SOLUSDT</option>
+<option>XRPUSDT</option>
+<option>DOGEUSDT</option>
+<option>ADAUSDT</option>
+<option>AVAXUSDT</option>
+<option>LINKUSDT</option>
+<option>TRXUSDT</option>
+<option>PEPEUSDT</option>
+<option>TAOUSDT</option>
+</select>
+
+<div class="toolbar">
+<button onclick="analyze()">ANALISIS AI</button>
+</div>
+
+<div id="analysis">
+Pilih coin kemudian tekan ANALISIS AI.
+</div>
+</div>
+
+<div class="card">
+<h3>💰 RISK MANAGEMENT</h3>
+
+<label class="label">Modal (USDT)</label>
+<input id="capital" type="number" value="100">
+
+<label class="label" style="display:block;margin-top:12px">Risiko (%)</label>
+<input id="risk" type="number" value="2">
+
+<label class="label" style="display:block;margin-top:12px">Harga entry</label>
+<input id="entry" type="number" placeholder="Harga entry">
+
+<label class="label" style="display:block;margin-top:12px">Stop Loss (%)</label>
+<input id="sl" type="number" value="3">
+
+<div class="toolbar">
+<button onclick="riskcalc()">HITUNG RISIKO</button>
+</div>
+
+<div id="riskresult"></div>
+</div>
+
+<div class="card">
+<h3>📖 CARA MEMBACA AI SCORE</h3>
+<p><span class="green">80–100</span> : Momentum kuat, perlu konfirmasi</p>
+<p><span class="green">65–79</span> : Potensi bullish</p>
+<p><span class="yellow">50–64</span> : Netral / tunggu</p>
+<p><span class="red">0–49</span> : Momentum lemah</p>
+<small>Score adalah hasil indikator teknikal, bukan jaminan harga akan naik.</small>
+</div>
+
+<footer>
+PRO TRADING AI MOBILE<br>
+Analisis teknikal bukan jaminan keuntungan.
+</footer>
+</div>
+
 <script>
-const coins=["BTC/IDR","ETH/IDR","SOL/IDR","DOGE/IDR","PEPE/IDR","FARTCOIN/IDR","VET/IDR","POL/IDR","ADA/IDR","XRP/IDR","TAO/IDR"];
-let rows=[],journal=[];
+const symbols=[
+"BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT",
+"XRPUSDT","DOGEUSDT","ADAUSDT","AVAXUSDT",
+"LINKUSDT","TRXUSDT","PEPEUSDT","TAOUSDT"
+];
+
+let marketData=[];
+
+async function getData(symbol){
+const url="https://api.binance.com/api/v3/klines?symbol="+symbol+"&interval=1h&limit=100";
+const res=await fetch(url);
+if(!res.ok)throw new Error("API gagal");
+const raw=await res.json();
+return raw.map(x=>({
+time:x[0],open:+x[1],high:+x[2],low:+x[3],
+close:+x[4],volume:+x[5]
+}));
+}
+
+function ema(values,period){
+let k=2/(period+1);
+let result=[values[0]];
+for(let i=1;i<values.length;i++){
+result.push(values[i]*k+result[i-1]*(1-k));
+}
+return result;
+}
+
+function rsi(values,period=14){
+if(values.length<=period)return 50;
+let gains=0,losses=0;
+for(let i=values.length-period;i<values.length;i++){
+let d=values[i]-values[i-1];
+if(d>0)gains+=d;
+else losses-=d;
+}
+if(losses===0)return 100;
+return 100-(100/(1+gains/losses));
+}
+
+function calculate(data){
+const c=data.map(x=>x.close);
+const e9=ema(c,9);
+const e21=ema(c,21);
+const e50=ema(c,50);
+const r=rsi(c);
+const m1=ema(c,12);
+const m2=ema(c,26);
+const macd=m1[m1.length-1]-m2[m2.length-1];
+const prevmacd=m1[m1.length-2]-m2[m2.length-2];
+const vol=data[data.length-1].volume;
+const avgvol=data.slice(-20).reduce((a,b)=>a+b.volume,0)/20;
+let score=50;
+
+if(e9.at(-1)>e21.at(-1))score+=10;
+if(e21.at(-1)>e50.at(-1))score+=10;
+if(c.at(-1)>e50.at(-1))score+=10;
+if(macd>0)score+=10;
+if(macd>prevmacd)score+=5;
+if(r>50&&r<70)score+=10;
+if(vol>avgvol)score+=5;
+if(r>=70)score-=10;
+if(r<30)score-=10;
+
+score=Math.max(0,Math.min(100,score));
+
+let signal="HOLD";
+if(score>=75)signal="BUY";
+if(score<=35)signal="SELL";
+
+return {price:c.at(-1),rsi:r,ema9:e9.at(-1),
+ema21:e21.at(-1),ema50:e50.at(-1),
+macd,score,signal,volume:vol,avgvol};
+}
+
+function fmt(n){
+if(n>=1000)return n.toLocaleString("en-US",{maximumFractionDigits:2});
+if(n>=1)return n.toLocaleString("en-US",{maximumFractionDigits:4});
+return n.toLocaleString("en-US",{maximumFractionDigits:8});
+}
+
+function colorSignal(s){
+if(s==="BUY")return "green";
+if(s==="SELL")return "red";
+return "yellow";
+}
+
 async function scan(){
- document.getElementById('last').textContent='...';
- let out=[];
- for(const s of coins){
-  try{
-   const pair=s.toLowerCase().replace('/','_');
-   const u=`https://indodax.com/api/${pair}/ticker`;
-   const resp=await fetch(u); if(!resp.ok)throw 0; const j=await resp.json();
-   let ticker=j.ticker||j; let price=Number(ticker.last), high=Number(ticker.high), low=Number(ticker.low), vol=Number(ticker.vol_idr||ticker.vol);
-   // Ticker-only heuristic: range position and volume are weak proxies; no candle indicators.
-   let score=35, rsi=null;
-   if(high>low && price>(low+(high-low)*.65))score+=18;
-   if(high>low && price>(low+(high-low)*.85))score+=12;
-   if(vol>0)score+=10;
-   score=Math.min(score,75);
-   let signal=score>=70?'WATCH':score>=55?'SETUP':'WAIT';
-   out.push({coin:s,price,score,signal,rsi});
-  }catch(e){out.push({coin:s,price:null,score:null,signal:'DATA ERROR',rsi:null})}
- }
- rows=out;render();document.getElementById('last').textContent=new Date().toLocaleTimeString('id-ID');
+document.getElementById("scanstatus").textContent="Scanning market...";
+document.getElementById("status").textContent="SCANNING";
+
+let results=[];
+let buyCount=0;
+
+for(let symbol of symbols){
+try{
+let data=await getData(symbol);
+let a=calculate(data);
+results.push({symbol,...a});
+if(a.signal==="BUY")buyCount++;
+}catch(e){
+console.log(symbol,e);
 }
-function render(){
- document.getElementById('candidates').textContent=rows.filter(x=>x.score>=70).length;
- document.getElementById('tbody').innerHTML=rows.map(x=>`<tr><td>${x.coin}</td><td>${x.price==null?'—':x.price.toLocaleString('id-ID')}</td><td>${x.score==null?'—':x.score}</td><td><span class="pill">${x.signal}</span></td><td>—</td></tr>`).join('');
 }
-function risk(){
- let c=+capital.value,e=+entry.value,s=+sl.value,t=+tp.value;
- if(!(c>0&&e>0&&s>0&&t>0)){riskout.textContent='Isi angka yang valid.';return}
- let stop=e*(1-s/100),take=e*(1+t/100),qty=c/e,loss=c*s/100,profit=c*t/100;
- riskout.innerHTML=`<p>Stop Loss: <b>${stop.toLocaleString('id-ID')}</b></p><p>Take Profit: <b>${take.toLocaleString('id-ID')}</b></p><p>Perkiraan rugi jika SL: <b class="red">Rp ${loss.toLocaleString('id-ID')}</b></p><p>Perkiraan profit jika TP: <b class="green">Rp ${profit.toLocaleString('id-ID')}</b></p><p>Jumlah coin jika seluruh modal digunakan: ${qty.toFixed(6)}</p>`;
+
+marketData=results;
+document.getElementById("total").textContent=results.length;
+document.getElementById("buys").textContent=buyCount;
+
+let btc=results.find(x=>x.symbol==="BTCUSDT");
+let eth=results.find(x=>x.symbol==="ETHUSDT");
+
+if(btc){
+document.getElementById("btc").textContent=fmt(btc.price);
+document.getElementById("btcchange").textContent="RSI "+btc.rsi.toFixed(1);
 }
-function journalAdd(){
- let c=pc.value,e=+pe.value,x=+px.value,q=+pq.value;if(!c||!(e>0&&x>0&&q>0))return alert('Lengkapi data.');
- journal.push({c,e,x,q,p:(x-e)*q});document.getElementById('journal').innerHTML=journal.map(a=>`<tr><td>${a.c}</td><td>${a.e.toLocaleString('id-ID')}</td><td>${a.x.toLocaleString('id-ID')}</td><td>${a.q}</td><td class="${a.p>=0?'green':'red'}">${a.p.toLocaleString('id-ID')}</td></tr>`).join('');
+if(eth){
+document.getElementById("eth").textContent=fmt(eth.price);
+document.getElementById("ethchange").textContent="RSI "+eth.rsi.toFixed(1);
 }
-function exportCSV(){let csv='Coin,Harga,Score,Sinyal\\n'+rows.map(x=>`${x.coin},${x.price||''},${x.score||''},${x.signal}`).join('\\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='scanner.csv';a.click();}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
-</script></body></html>
+
+results.sort((a,b)=>b.score-a.score);
+
+document.getElementById("results").innerHTML=results.map(a=>`
+<tr>
+<td><b>${a.symbol.replace("USDT","")}</b></td>
+<td>${fmt(a.price)}</td>
+<td>--</td>
+<td>${a.rsi.toFixed(1)}</td>
+<td>
+<b>${a.score}</b>
+<div class="progress"><div class="bar" style="width:${a.score}%"></div></div>
+</td>
+<td class="signal ${colorSignal(a.signal)}">${a.signal}</td>
+</tr>
+`).join("");
+
+document.getElementById("status").textContent="MARKET LIVE";
+document.getElementById("status").className="value green";
+document.getElementById("updated").textContent="Update "+new Date().toLocaleTimeString("id-ID");
+document.getElementById("scanstatus").textContent="Scan selesai • "+results.length+" aset";
+}
+
+async function analyze(){
+const symbol=document.getElementById("coin").value;
+const box=document.getElementById("analysis");
+box.innerHTML="Mengambil data "+symbol+"...";
+
+try{
+const data=await getData(symbol);
+const a=calculate(data);
+const price=a.price;
+const sl=price*0.97;
+const tp1=price*1.03;
+const tp2=price*1.05;
+const tp3=price*1.08;
+
+box.innerHTML=`
+<h2 class="${colorSignal(a.signal)}">${a.signal}</h2>
+<div class="grid">
+<div><small>AI SCORE</small><div class="value">${a.score}/100</div></div>
+<div><small>RSI</small><div class="value">${a.rsi.toFixed(2)}</div></div>
+<div><small>EMA 9</small><div>${fmt(a.ema9)}</div></div>
+<div><small>EMA 21</small><div>${fmt(a.ema21)}</div></div>
+<div><small>EMA 50</small><div>${fmt(a.ema50)}</div></div>
+<div><small>MACD</small><div>${a.macd.toFixed(6)}</div></div>
+</div>
+<hr style="border-color:#26354a;margin:18px 0">
+<h3>📍 Harga Referensi</h3>
+<p>Harga sekarang: <b>${fmt(price)}</b></p>
+<p>Stop Loss (-3%): <b class="red">${fmt(sl)}</b></p>
+<p>TP1 (+3%): <b class="green">${fmt(tp1)}</b></p>
+<p>TP2 (+5%): <b class="green">${fmt(tp2)}</b></p>
+<p>TP3 (+8%): <b class="green">${fmt(tp3)}</b></p>
+<p>Volume: ${fmt(a.volume)}</p>
+<p>Rata-rata volume: ${fmt(a.avgvol)}</p>
+<hr style="border-color:#26354a">
+<p><b>Interpretasi:</b> ${interpret(a)}</p>
+<small>Harga dan target adalah simulasi berbasis harga saat analisis, bukan rekomendasi otomatis.</small>
+`;
+}catch(e){
+box.innerHTML='<span class="red">Gagal mengambil data. Periksa internet atau coba lagi.</span>';
+}
+}
+
+function interpret(a){
+if(a.score>=80)return "Momentum teknikal kuat. Periksa support, resistance dan risiko sebelum entry.";
+if(a.score>=65)return "Momentum bullish. Tunggu konfirmasi breakout atau pullback.";
+if(a.score>=50)return "Momentum belum kuat. Sebaiknya menunggu.";
+if(a.score>=36)return "Momentum lemah. Risiko entry cukup tinggi.";
+return "Tekanan bearish cukup kuat. Hindari entry tanpa strategi.";
+}
+
+function riskcalc(){
+const capital=+document.getElementById("capital").value;
+const risk=+document.getElementById("risk").value;
+const entry=+document.getElementById("entry").value;
+const slp=+document.getElementById("sl").value;
+
+if(!capital||!entry||!slp){
+document.getElementById("riskresult").textContent="Isi data terlebih dahulu.";
+return;
+}
+
+const riskmoney=capital*risk/100;
+const stopprice=entry*(1-slp/100);
+const position=riskmoney/(slp/100);
+const qty=position/entry;
+
+document.getElementById("riskresult").innerHTML=`
+<h3>Hasil Perhitungan</h3>
+<p>Risiko modal: <b class="red">${fmt(riskmoney)} USDT</b></p>
+<p>Nilai posisi: <b>${fmt(position)} USDT</b></p>
+<p>Estimasi quantity: <b>${qty.toFixed(6)}</b></p>
+<p>Harga Stop Loss: <b class="red">${fmt(stopprice)}</b></p>
+<small>Perhitungan mengasumsikan stop loss terisi sesuai harga. Slippage dan biaya belum dihitung.</small>
+`;
+}
+
+scan();
+</script>
+</body>
+</html>
+HTML
