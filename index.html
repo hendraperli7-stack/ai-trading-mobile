@@ -2,14 +2,14 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080d18">
-<title>PRO TRADING AI MOBILE</title>
+<title>PRO TRADING AI - US STOCK</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:#e8edf7;font-family:Arial,sans-serif}
-header{padding:18px;background:#101a2c;border-bottom:1px solid #26354a}
-h1{font-size:21px;margin:0}
+header{padding:18px;background:#101a2c;border-bottom:1px solid #26364e}
+h1{font-size:22px;margin:0}
 small{color:#9eabc1}
 .wrap{padding:14px;max-width:950px;margin:auto}
 .card{background:#111b2d;border:1px solid #26364e;border-radius:15px;padding:15px;margin-bottom:12px}
@@ -18,129 +18,116 @@ small{color:#9eabc1}
 .value{font-size:22px;font-weight:bold;margin-top:7px}
 .green{color:#36d692}
 .red{color:#ff657a}
-.yellow{color:#ffcb68}
-button{background:#1a2b45;color:white;border:1px solid #344b6c;padding:12px;border-radius:10px;font-weight:bold}
+.yellow{color:#ffc568}
+button,select,input{background:#1a2b45;color:white;border:1px solid #344b6c;padding:12px;border-radius:10px;font-size:14px}
+button{cursor:pointer;font-weight:bold}
 button:active{opacity:.7}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.toolbar button{flex:1}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:10px 6px;border-bottom:1px solid #26354a}
+.toolbar>*{flex:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:9px 6px;border-bottom:1px solid #26364e;text-align:left}
 th{color:#9eabc1}
-.signal{font-weight:bold}
-.badge{padding:5px 8px;border-radius:8px;background:#1b3048}
-.progress{height:7px;background:#26354a;border-radius:10px;overflow:hidden;margin-top:8px}
-.bar{height:100%;background:#36d692}
-input,select{width:100%;padding:11px;border-radius:9px;background:#17243a;color:white;border:1px solid #354a66}
-footer{text-align:center;color:#8b9bb3;padding:20px;font-size:12px}
+.list{overflow:auto}
+section{margin:16px 0}
+input,select{width:100%}
+.big{font-size:25px;font-weight:bold}
 </style>
 </head>
 <body>
 
 <header>
 <h1>🚀 PRO TRADING AI</h1>
-<small>Mobile Market Scanner • Crypto Intelligence</small>
+<small>US Stock Scanner • Momentum • RSI • Volume</small>
 </header>
 
 <div class="wrap">
 
 <div class="card">
-<div class="label">STATUS MARKET</div>
-<div id="status" class="value yellow">MENGHUBUNGKAN...</div>
-<small id="updated">Menunggu data market</small>
+<div class="label">STATUS</div>
+<div class="value yellow" id="status">SIAP</div>
+<small id="updated">Scanner saham AS</small>
 </div>
 
 <div class="grid">
 <div class="card">
-<div class="label">BTC / USDT</div>
-<div class="value" id="btc">$--</div>
-<div id="btcchange">--</div>
+<div class="label">SAHAM DIPINDAI</div>
+<div class="value" id="total">0</div>
 </div>
-
 <div class="card">
-<div class="label">ETH / USDT</div>
-<div class="value" id="eth">$--</div>
-<div id="ethchange">--</div>
-</div>
-
-<div class="card">
-<div class="label">TOTAL SCAN</div>
-<div class="value" id="total">--</div>
-<small>Asset dipantau</small>
-</div>
-
-<div class="card">
-<div class="label">BUY SIGNAL</div>
-<div class="value green" id="buys">--</div>
-<small>Peluang bullish</small>
+<div class="label">POTENSI BUY</div>
+<div class="value green" id="buys">0</div>
 </div>
 </div>
 
 <div class="card">
-<h3>🔎 AI MARKET SCANNER</h3>
+<h3>🔎 AI STOCK SCANNER</h3>
+
 <div class="toolbar">
 <button onclick="scan()">🔄 SCAN MARKET</button>
 </div>
-<small id="scanstatus">Scanner belum dijalankan</small>
-<div style="overflow:auto;margin-top:12px">
+
+<small id="scaninfo">Belum melakukan scan</small>
+
+<div class="list">
 <table>
 <thead>
 <tr>
-<th>Coin</th>
+<th>Saham</th>
 <th>Harga</th>
-<th>24h</th>
+<th>%</th>
 <th>RSI</th>
-<th>Score</th>
+<th>Skor</th>
 <th>Sinyal</th>
 </tr>
 </thead>
-<tbody id="results">
-<tr><td colspan="6">Tekan SCAN MARKET</td></tr>
-</tbody>
+<tbody id="rows"></tbody>
 </table>
 </div>
 </div>
 
 <div class="card">
-<h3>🧠 ANALISIS COIN</h3>
-<label class="label">Pilih aset</label>
-<select id="coin">
-<option>BTCUSDT</option>
-<option>ETHUSDT</option>
-<option>BNBUSDT</option>
-<option>SOLUSDT</option>
-<option>XRPUSDT</option>
-<option>DOGEUSDT</option>
-<option>ADAUSDT</option>
-<option>AVAXUSDT</option>
-<option>LINKUSDT</option>
-<option>TRXUSDT</option>
-<option>PEPEUSDT</option>
-<option>TAOUSDT</option>
+<h3>🧠 ANALISIS SAHAM</h3>
+
+<label class="label">Pilih saham</label>
+<select id="symbol">
+<option>NVDA</option>
+<option>AMD</option>
+<option>TSLA</option>
+<option>PLTR</option>
+<option>AAPL</option>
+<option>MSFT</option>
+<option>AMZN</option>
+<option>META</option>
+<option>GOOGL</option>
+<option>AVGO</option>
+<option>SMCI</option>
+<option>COIN</option>
+<option>HOOD</option>
+<option>MU</option>
+<option>SOFI</option>
 </select>
 
 <div class="toolbar">
-<button onclick="analyze()">ANALISIS AI</button>
+<button onclick="analyze()">ANALISIS</button>
 </div>
 
-<div id="analysis">
-Pilih coin kemudian tekan ANALISIS AI.
-</div>
+<div id="analysis">Pilih saham lalu tekan ANALISIS.</div>
 </div>
 
 <div class="card">
-<h3>💰 RISK MANAGEMENT</h3>
+<h3>💰 KALKULATOR RISIKO</h3>
 
-<label class="label">Modal (USDT)</label>
-<input id="capital" type="number" value="100">
+<label>Modal USD</label>
+<input id="capital" type="number" placeholder="Contoh 1000">
 
-<label class="label" style="display:block;margin-top:12px">Risiko (%)</label>
+<label style="display:block;margin-top:10px">Risiko (%)</label>
 <input id="risk" type="number" value="2">
 
-<label class="label" style="display:block;margin-top:12px">Harga entry</label>
-<input id="entry" type="number" placeholder="Harga entry">
+<label style="display:block;margin-top:10px">Harga masuk</label>
+<input id="entry" type="number" placeholder="Harga beli">
 
-<label class="label" style="display:block;margin-top:12px">Stop Loss (%)</label>
-<input id="sl" type="number" value="3">
+<label style="display:block;margin-top:10px">Stop loss (%)</label>
+<input id="sl" type="number" value="5">
 
 <div class="toolbar">
 <button onclick="riskcalc()">HITUNG RISIKO</button>
@@ -150,242 +137,194 @@ Pilih coin kemudian tekan ANALISIS AI.
 </div>
 
 <div class="card">
-<h3>📖 CARA MEMBACA AI SCORE</h3>
-<p><span class="green">80–100</span> : Momentum kuat, perlu konfirmasi</p>
-<p><span class="green">65–79</span> : Potensi bullish</p>
-<p><span class="yellow">50–64</span> : Netral / tunggu</p>
-<p><span class="red">0–49</span> : Momentum lemah</p>
-<small>Score adalah hasil indikator teknikal, bukan jaminan harga akan naik.</small>
+<small>
+Data harga bersifat indikatif dan dapat terlambat.
+Sinyal teknikal bukan jaminan keuntungan.
+Selalu periksa harga aktual di aplikasi broker sebelum transaksi.
+</small>
 </div>
 
-<footer>
-PRO TRADING AI MOBILE<br>
-Analisis teknikal bukan jaminan keuntungan.
-</footer>
 </div>
 
 <script>
-const symbols=[
-"BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT",
-"XRPUSDT","DOGEUSDT","ADAUSDT","AVAXUSDT",
-"LINKUSDT","TRXUSDT","PEPEUSDT","TAOUSDT"
+const stocks=[
+"NVDA","AMD","TSLA","PLTR","AAPL",
+"MSFT","AMZN","META","GOOGL","AVGO",
+"SMCI","COIN","HOOD","MU","SOFI"
 ];
 
-let marketData=[];
-
-async function getData(symbol){
-const url="https://api.binance.com/api/v3/klines?symbol="+symbol+"&interval=1h&limit=100";
-const res=await fetch(url);
-if(!res.ok)throw new Error("API gagal");
-const raw=await res.json();
-return raw.map(x=>({
-time:x[0],open:+x[1],high:+x[2],low:+x[3],
-close:+x[4],volume:+x[5]
-}));
-}
-
-function ema(values,period){
-let k=2/(period+1);
-let result=[values[0]];
-for(let i=1;i<values.length;i++){
-result.push(values[i]*k+result[i-1]*(1-k));
-}
-return result;
-}
-
-function rsi(values,period=14){
-if(values.length<=period)return 50;
-let gains=0,losses=0;
-for(let i=values.length-period;i<values.length;i++){
-let d=values[i]-values[i-1];
-if(d>0)gains+=d;
-else losses-=d;
-}
-if(losses===0)return 100;
-return 100-(100/(1+gains/losses));
-}
-
-function calculate(data){
-const c=data.map(x=>x.close);
-const e9=ema(c,9);
-const e21=ema(c,21);
-const e50=ema(c,50);
-const r=rsi(c);
-const m1=ema(c,12);
-const m2=ema(c,26);
-const macd=m1[m1.length-1]-m2[m2.length-1];
-const prevmacd=m1[m1.length-2]-m2[m2.length-2];
-const vol=data[data.length-1].volume;
-const avgvol=data.slice(-20).reduce((a,b)=>a+b.volume,0)/20;
-let score=50;
-
-if(e9.at(-1)>e21.at(-1))score+=10;
-if(e21.at(-1)>e50.at(-1))score+=10;
-if(c.at(-1)>e50.at(-1))score+=10;
-if(macd>0)score+=10;
-if(macd>prevmacd)score+=5;
-if(r>50&&r<70)score+=10;
-if(vol>avgvol)score+=5;
-if(r>=70)score-=10;
-if(r<30)score-=10;
-
-score=Math.max(0,Math.min(100,score));
-
-let signal="HOLD";
-if(score>=75)signal="BUY";
-if(score<=35)signal="SELL";
-
-return {price:c.at(-1),rsi:r,ema9:e9.at(-1),
-ema21:e21.at(-1),ema50:e50.at(-1),
-macd,score,signal,volume:vol,avgvol};
-}
+let results=[];
 
 function fmt(n){
-if(n>=1000)return n.toLocaleString("en-US",{maximumFractionDigits:2});
-if(n>=1)return n.toLocaleString("en-US",{maximumFractionDigits:4});
-return n.toLocaleString("en-US",{maximumFractionDigits:8});
+return Number(n).toLocaleString("en-US",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
 }
 
-function colorSignal(s){
-if(s==="BUY")return "green";
-if(s==="SELL")return "red";
-return "yellow";
+async function getStock(symbol){
+const url="https://query1.finance.yahoo.com/v8/finance/chart/"
++symbol+"?range=3mo&interval=1d";
+
+const r=await fetch(url);
+if(!r.ok)throw new Error("Data tidak tersedia");
+
+const j=await r.json();
+const x=j.chart.result[0];
+const q=x.indicators.quote[0];
+
+const closes=q.close.filter(v=>v!=null);
+const volumes=q.volume.filter(v=>v!=null);
+
+if(closes.length<20)throw new Error("Data kurang");
+
+const last=closes[closes.length-1];
+const prev=closes[closes.length-2];
+const change=(last-prev)/prev*100;
+
+const sma=(arr,n)=>{
+const a=arr.slice(-n);
+return a.reduce((s,v)=>s+v,0)/a.length;
+};
+
+const sma20=sma(closes,20);
+const sma50=closes.length>=50?sma(closes,50):sma(closes,20);
+
+let gains=0,losses=0;
+for(let i=closes.length-14;i<closes.length;i++){
+const d=closes[i]-closes[i-1];
+if(d>0)gains+=d;
+else losses+=Math.abs(d);
+}
+
+const avgGain=gains/14;
+const avgLoss=losses/14;
+const rs=avgLoss===0?100:avgGain/avgLoss;
+const rsi=100-(100/(1+rs));
+
+const v=volumes[volumes.length-1];
+const avgVol=volumes.slice(-20).reduce((a,b)=>a+b,0)/Math.min(20,volumes.length);
+const volumeRatio=avgVol? v/avgVol:1;
+
+let score=0;
+if(last>sma20)score+=25;
+if(sma20>sma50)score+=20;
+if(change>0)score+=15;
+if(rsi>50&&rsi<70)score+=20;
+if(volumeRatio>1.2)score+=20;
+
+let signal="WATCH";
+if(score>=75)signal="BUY";
+else if(score<35)signal="WEAK";
+
+return{
+symbol,last,change,rsi,sma20,sma50,
+volumeRatio,score,signal
+};
 }
 
 async function scan(){
-document.getElementById("scanstatus").textContent="Scanning market...";
-document.getElementById("status").textContent="SCANNING";
+const status=document.getElementById("status");
+const rows=document.getElementById("rows");
 
-let results=[];
-let buyCount=0;
+status.textContent="MEMINDAI...";
+status.className="value yellow";
+rows.innerHTML="";
+results=[];
 
-for(let symbol of symbols){
+let errors=0;
+
+for(const s of stocks){
 try{
-let data=await getData(symbol);
-let a=calculate(data);
-results.push({symbol,...a});
-if(a.signal==="BUY")buyCount++;
+const d=await getStock(s);
+results.push(d);
 }catch(e){
-console.log(symbol,e);
+errors++;
 }
-}
-
-marketData=results;
-document.getElementById("total").textContent=results.length;
-document.getElementById("buys").textContent=buyCount;
-
-let btc=results.find(x=>x.symbol==="BTCUSDT");
-let eth=results.find(x=>x.symbol==="ETHUSDT");
-
-if(btc){
-document.getElementById("btc").textContent=fmt(btc.price);
-document.getElementById("btcchange").textContent="RSI "+btc.rsi.toFixed(1);
-}
-if(eth){
-document.getElementById("eth").textContent=fmt(eth.price);
-document.getElementById("ethchange").textContent="RSI "+eth.rsi.toFixed(1);
 }
 
 results.sort((a,b)=>b.score-a.score);
 
-document.getElementById("results").innerHTML=results.map(a=>`
-<tr>
-<td><b>${a.symbol.replace("USDT","")}</b></td>
-<td>${fmt(a.price)}</td>
-<td>--</td>
-<td>${a.rsi.toFixed(1)}</td>
-<td>
-<b>${a.score}</b>
-<div class="progress"><div class="bar" style="width:${a.score}%"></div></div>
-</td>
-<td class="signal ${colorSignal(a.signal)}">${a.signal}</td>
-</tr>
-`).join("");
+for(const d of results){
+const tr=document.createElement("tr");
+tr.innerHTML=
+`<td><b>${d.symbol}</b></td>
+<td>${fmt(d.last)}</td>
+<td class="${d.change>=0?"green":"red"}">${fmt(d.change)}%</td>
+<td>${fmt(d.rsi)}</td>
+<td>${d.score}</td>
+<td class="${d.signal==="BUY"?"green":d.signal==="WEAK"?"red":"yellow"}">${d.signal}</td>`;
+rows.appendChild(tr);
+}
 
-document.getElementById("status").textContent="MARKET LIVE";
-document.getElementById("status").className="value green";
-document.getElementById("updated").textContent="Update "+new Date().toLocaleTimeString("id-ID");
-document.getElementById("scanstatus").textContent="Scan selesai • "+results.length+" aset";
+document.getElementById("total").textContent=results.length;
+document.getElementById("buys").textContent=
+results.filter(x=>x.signal==="BUY").length;
+
+document.getElementById("scaninfo").textContent=
+results.length+" saham berhasil dianalisis • "+errors+" gagal";
+
+status.textContent=results.length?
+"SCAN SELESAI":"DATA TIDAK TERSEDIA";
+
+status.className=results.length?"value green":"value red";
+
+document.getElementById("updated").textContent=
+"Waktu scan: "+new Date().toLocaleTimeString();
 }
 
 async function analyze(){
-const symbol=document.getElementById("coin").value;
+const s=document.getElementById("symbol").value;
 const box=document.getElementById("analysis");
-box.innerHTML="Mengambil data "+symbol+"...";
+
+box.innerHTML="Mengambil data "+s+"...";
 
 try{
-const data=await getData(symbol);
-const a=calculate(data);
-const price=a.price;
-const sl=price*0.97;
-const tp1=price*1.03;
-const tp2=price*1.05;
-const tp3=price*1.08;
+const d=await getStock(s);
 
-box.innerHTML=`
-<h2 class="${colorSignal(a.signal)}">${a.signal}</h2>
-<div class="grid">
-<div><small>AI SCORE</small><div class="value">${a.score}/100</div></div>
-<div><small>RSI</small><div class="value">${a.rsi.toFixed(2)}</div></div>
-<div><small>EMA 9</small><div>${fmt(a.ema9)}</div></div>
-<div><small>EMA 21</small><div>${fmt(a.ema21)}</div></div>
-<div><small>EMA 50</small><div>${fmt(a.ema50)}</div></div>
-<div><small>MACD</small><div>${a.macd.toFixed(6)}</div></div>
-</div>
-<hr style="border-color:#26354a;margin:18px 0">
-<h3>📍 Harga Referensi</h3>
-<p>Harga sekarang: <b>${fmt(price)}</b></p>
-<p>Stop Loss (-3%): <b class="red">${fmt(sl)}</b></p>
-<p>TP1 (+3%): <b class="green">${fmt(tp1)}</b></p>
-<p>TP2 (+5%): <b class="green">${fmt(tp2)}</b></p>
-<p>TP3 (+8%): <b class="green">${fmt(tp3)}</b></p>
-<p>Volume: ${fmt(a.volume)}</p>
-<p>Rata-rata volume: ${fmt(a.avgvol)}</p>
-<hr style="border-color:#26354a">
-<p><b>Interpretasi:</b> ${interpret(a)}</p>
-<small>Harga dan target adalah simulasi berbasis harga saat analisis, bukan rekomendasi otomatis.</small>
-`;
+box.innerHTML=
+`<h3>${d.symbol}</h3>
+<p>Harga: <b>$${fmt(d.last)}</b></p>
+<p>Perubahan: <b class="${d.change>=0?"green":"red"}">${fmt(d.change)}%</b></p>
+<p>RSI: <b>${fmt(d.rsi)}</b></p>
+<p>SMA20: $${fmt(d.sma20)}</p>
+<p>SMA50: $${fmt(d.sma50)}</p>
+<p>Volume relatif: ${fmt(d.volumeRatio)}x</p>
+<p>Skor: <b>${d.score}/100</b></p>
+<p>Sinyal: <b class="${d.signal==="BUY"?"green":"yellow"}">${d.signal}</b></p>
+<p>${d.score>=75?"Momentum teknikal cukup kuat. Tetap konfirmasi sebelum membeli.":d.score>=50?"Momentum mulai terbentuk, tunggu konfirmasi.":"Momentum belum kuat."}</p>`;
+
 }catch(e){
-box.innerHTML='<span class="red">Gagal mengambil data. Periksa internet atau coba lagi.</span>';
+box.innerHTML=
+"<p class='red'>Data gagal diambil. Periksa koneksi atau sumber data.</p>";
 }
-}
-
-function interpret(a){
-if(a.score>=80)return "Momentum teknikal kuat. Periksa support, resistance dan risiko sebelum entry.";
-if(a.score>=65)return "Momentum bullish. Tunggu konfirmasi breakout atau pullback.";
-if(a.score>=50)return "Momentum belum kuat. Sebaiknya menunggu.";
-if(a.score>=36)return "Momentum lemah. Risiko entry cukup tinggi.";
-return "Tekanan bearish cukup kuat. Hindari entry tanpa strategi.";
 }
 
 function riskcalc(){
 const capital=+document.getElementById("capital").value;
 const risk=+document.getElementById("risk").value;
 const entry=+document.getElementById("entry").value;
-const slp=+document.getElementById("sl").value;
+const sl=+document.getElementById("sl").value;
 
-if(!capital||!entry||!slp){
-document.getElementById("riskresult").textContent="Isi data terlebih dahulu.";
+if(!capital||!entry||!sl){
+document.getElementById("riskresult").innerHTML=
+"<p class='yellow'>Lengkapi data terlebih dahulu.</p>";
 return;
 }
 
 const riskmoney=capital*risk/100;
-const stopprice=entry*(1-slp/100);
-const position=riskmoney/(slp/100);
+const stopprice=entry*(1-sl/100);
+const position=riskmoney/(sl/100);
 const qty=position/entry;
 
-document.getElementById("riskresult").innerHTML=`
-<h3>Hasil Perhitungan</h3>
-<p>Risiko modal: <b class="red">${fmt(riskmoney)} USDT</b></p>
-<p>Nilai posisi: <b>${fmt(position)} USDT</b></p>
-<p>Estimasi quantity: <b>${qty.toFixed(6)}</b></p>
-<p>Harga Stop Loss: <b class="red">${fmt(stopprice)}</b></p>
-<small>Perhitungan mengasumsikan stop loss terisi sesuai harga. Slippage dan biaya belum dihitung.</small>
-`;
+document.getElementById("riskresult").innerHTML=
+`<h3>Hasil perhitungan</h3>
+<p>Risiko modal: <b class="red">$${fmt(riskmoney)}</b></p>
+<p>Nilai posisi: <b>$${fmt(position)}</b></p>
+<p>Jumlah saham: <b>${qty.toFixed(4)}</b></p>
+<p>Stop loss: <b class="red">$${fmt(stopprice)}</b></p>
+<p>Perhitungan ini menggunakan risiko persentase dari modal.</p>`;
 }
-
-scan();
 </script>
 </body>
 </html>
-HTML
